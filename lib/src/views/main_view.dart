@@ -28,10 +28,6 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: IconButton(
-        icon: Icon(Icons.info),
-        onPressed: () => showAboutDialog(context: context),
-      ),
       appBar: AppBar(
         centerTitle: true,
         title: Text('Productivity Report'),
