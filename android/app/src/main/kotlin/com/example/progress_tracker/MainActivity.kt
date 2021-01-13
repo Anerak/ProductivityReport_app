@@ -1,4 +1,4 @@
-package com.example.progress_tracker
+package cf.anerak.ProductivityReport
 
 import io.flutter.embedding.android.FlutterActivity
 

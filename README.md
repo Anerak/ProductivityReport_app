@@ -14,6 +14,8 @@ Just add a report of your day in the app, simple as that!
 
 ## 🎯 Planned features
 
+* This **really** needs a proper icon ✳️
+
 * Daily reminder to report your day.
 
 * Another view with statistics about your productivity.
