@@ -1,16 +1,29 @@
-# progress_tracker
+# 🦆 Productivity Report app (until a new name comes up)
 
-A new Flutter project.
+Sometimes we think about our day. Perhaps that very same night, could be tomorrow, on a month.
 
-## Getting Started
+Why not keep track of it?
 
-This project is a starting point for a Flutter application.
+Just add a report of your day in the app, simple as that!
 
-A few resources to get you started if this is your first Flutter project:
+## 🔥 What's working so far?
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+* [x] Creating new reports.
+* [x] Showing reports.
+* [x] Editing and deleting reports.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🎯 Planned features
+
+* Daily reminder to report your day.
+
+* Another view with statistics about your productivity.
+
+* Somewhere to see the licenses of the project.
+
+## 🎬 Credits
+
+* Everyone part of the development of **Flutter**.
+
+* Developers of the packages used in this project.
+
+* **You** for reading this part 😛
