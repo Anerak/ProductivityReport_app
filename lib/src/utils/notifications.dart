@@ -40,6 +40,7 @@ class LocalNotifications {
   }
 
   /// Required for iOS devices
+  ///
   void _requestPermissions() => _flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
@@ -51,22 +52,36 @@ class LocalNotifications {
     return await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
   }
 
-  Future<void> fooBar() async {
-    final List foo = await this.pendingNotifications();
-    for (PendingNotificationRequest i in foo) {
-      print('ID: ${i.id} | Title: ${i.title} | Body: ${i.body}');
-    }
-  }
-
   /// Deletes all pending notifications
   ///
   /// Returns a `bool` value based if the pending notifications list is empty.
+  ///
   Future<bool> cancelNotifications() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
     List<PendingNotificationRequest> ntfs = await this.pendingNotifications();
 
     if (ntfs.isEmpty) return true;
     return false;
+  }
+
+  /// Returns a TZDateTime object with the hour and minutes specified.
+  /// The type `TZDateTime` belongs to the timezone package.
+  ///
+  tz.TZDateTime _tzDateTimeInstance({int hour, int minutes, int dayOffset}) {
+    tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    final DateTime comparisonTime = DateTime.now();
+    if (comparisonTime.timeZoneOffset != now.timeZoneOffset) {
+      now = now.add(
+        Duration(hours: comparisonTime.timeZoneOffset.inHours),
+      );
+    }
+
+    tz.TZDateTime scheduleDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
+    scheduleDate = scheduleDate
+        .add(Duration(days: (now.isBefore(scheduleDate) ? 1 : 0) + dayOffset));
+    print('$now, $scheduleDate');
+    return scheduleDate;
   }
 
   /// Send a simple notification
@@ -85,11 +100,12 @@ class LocalNotifications {
   }
 
   /// Schedule a notification
-  void scheduleNotification({bool sound = false}) async {
+  void scheduleNotification(
+      {int id = 0, bool sound = false, List<int> time, int dayOffset}) async {
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       _id,
       'reminder',
-      'Reminder to report your day ${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour + 1)}',
+      'Reminder to report your day.',
       category: 'CATEGORY_REMINDER',
       onlyAlertOnce: true,
       playSound: sound,
@@ -107,19 +123,22 @@ class LocalNotifications {
     );
 
     await _flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'Report your day!',
-        'In case you haven\'t reported your day yet.',
-        tz.TZDateTime.now(tz.local).add(Duration(seconds: 20)),
-        platformDetails,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
+      id,
+      'Report your day!',
+      'In case you haven\'t reported it yet.',
+      _tzDateTimeInstance(
+          hour: time.first, minutes: time.last, dayOffset: dayOffset),
+      platformDetails,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
   }
 
-  void periodicNotification(
-      {bool sound = false,
-      RepeatInterval interval = RepeatInterval.daily}) async {
+  void periodicNotification({
+    bool sound = false,
+    RepeatInterval interval = RepeatInterval.daily,
+  }) async {
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       _id,
       'reminder',
@@ -141,5 +160,19 @@ class LocalNotifications {
       platformDetails,
       androidAllowWhileIdle: true,
     );
+  }
+
+  void scheduleMultiple({int amount = 1, List<int> time}) {
+    final DateTime comparisonTime = DateTime.now();
+    DateTime insertedTime = DateTime(comparisonTime.year, comparisonTime.month,
+        comparisonTime.day, time.first, time.last);
+    for (int i = 0; i < amount; i++) {
+      //if (comparisonTime.isBefore(insertedTime)) {
+      this.scheduleNotification(id: i, sound: true, time: time, dayOffset: i);
+      //} else {
+      //  continue;
+      //}
+      //insertedTime.add(Duration(days: 1));
+    }
   }
 }
