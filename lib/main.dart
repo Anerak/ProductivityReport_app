@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,9 +21,13 @@ void main() async {
   tz.initializeTimeZones();
   LocalNotifications localNotifications = LocalNotifications.localNotifications;
   localNotifications.initNotificationsService(androidIconFile: 'ic_launcher');
-  if (Hive.box('settings').getAt(0)) {
-    localNotifications.periodicNotification(
-        sound: true, interval: RepeatInterval.daily);
+  if (Hive.box('settings').get('notif_on', defaultValue: false)) {
+    final List<PendingNotificationRequest> pending =
+        await localNotifications.pendingNotifications();
+    if (pending.length < 2) {
+      localNotifications.scheduleMultiple(
+          amount: 10, time: Hive.box('settings').get('custom_time'));
+    }
   }
   runApp(MyApp());
 }

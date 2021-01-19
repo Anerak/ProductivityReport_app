@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:progress_tracker/src/models/Report.dart';
+import 'package:progress_tracker/src/widgets/drawer.dart';
 
 class MainView extends StatefulWidget {
   static String routeName = 'home';
@@ -28,6 +29,7 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
         centerTitle: true,
         title: Text('Productivity Report'),
@@ -41,6 +43,7 @@ class _MainViewState extends State<MainView> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Add Report',
         child: Icon(Icons.add),
         onPressed: () async {
           await _reportCreator(context: context);
