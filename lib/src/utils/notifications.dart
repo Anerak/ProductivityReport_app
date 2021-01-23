@@ -69,18 +69,21 @@ class LocalNotifications {
   ///
   tz.TZDateTime _tzDateTimeInstance({int hour, int minutes, int dayOffset}) {
     tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    final DateTime comparisonTime = DateTime.now();
-    if (comparisonTime.timeZoneOffset != now.timeZoneOffset) {
-      now = now.add(
-        Duration(hours: comparisonTime.timeZoneOffset.inHours),
-      );
-    }
 
-    tz.TZDateTime scheduleDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
-    scheduleDate = scheduleDate
-        .add(Duration(days: (now.isBefore(scheduleDate) ? 1 : 0) + dayOffset));
-    print('$now, $scheduleDate');
+    tz.TZDateTime scheduleDate = tz.TZDateTime(
+        now.location, now.year, now.month, now.day, hour, minutes);
+
+    // This line converts the time we want to receive the notification to UTC.
+    Duration timeZoneOffset = DateTime.now().timeZoneOffset;
+    scheduleDate = timeZoneOffset.isNegative
+        ? scheduleDate.subtract(timeZoneOffset)
+        : scheduleDate.add(timeZoneOffset);
+
+    // If the UTC time has already happened, we schedule it for the next day.
+    scheduleDate = scheduleDate.add(Duration(
+      days: (now.isBefore(scheduleDate) ? 0 : 1) + dayOffset,
+    ));
+
     return scheduleDate;
   }
 
@@ -100,6 +103,7 @@ class LocalNotifications {
   }
 
   /// Schedule a notification
+  ///
   void scheduleNotification(
       {int id = 0, bool sound = false, List<int> time, int dayOffset}) async {
     AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -162,17 +166,11 @@ class LocalNotifications {
     );
   }
 
+  /// Just a wrapper for scheduling multiple notifications.
+  ///
   void scheduleMultiple({int amount = 1, List<int> time}) {
-    final DateTime comparisonTime = DateTime.now();
-    DateTime insertedTime = DateTime(comparisonTime.year, comparisonTime.month,
-        comparisonTime.day, time.first, time.last);
     for (int i = 0; i < amount; i++) {
-      //if (comparisonTime.isBefore(insertedTime)) {
       this.scheduleNotification(id: i, sound: true, time: time, dayOffset: i);
-      //} else {
-      //  continue;
-      //}
-      //insertedTime.add(Duration(days: 1));
     }
   }
 }
