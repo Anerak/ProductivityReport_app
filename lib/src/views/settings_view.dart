@@ -62,12 +62,9 @@ class _SettingsViewState extends State<SettingsView> {
             if (_settings != null && _settings.get('notif_on'))
               ListTile(
                 leading: Icon(Icons.access_alarm),
-                title: Text('Set an hour for the reminder.'),
+                title: Text('Set an hour for the reminder'),
                 trailing: Text(
-                  // Believe me when I say this part is horrible
-                  // but it works.
-                  '${_settings.get('custom_time').first}:${_settings.get('custom_time').last < 10 ? '0' + _settings.get('custom_time').last.toString() : _settings.get('custom_time').last}' ??
-                      '',
+                  _prettyTime(),
                   style: TextStyle(
                     fontSize: 18.0,
                     color: (_settings != null && _settings.get('notif_on'))
@@ -79,8 +76,9 @@ class _SettingsViewState extends State<SettingsView> {
                   TimeOfDay _pickerResult = await showTimePicker(
                     context: context,
                     initialTime: TimeOfDay(
-                        hour: TimeOfDay.now().hour,
-                        minute: TimeOfDay.now().minute + 3),
+                      hour: TimeOfDay.now().hour,
+                      minute: TimeOfDay.now().minute + 3,
+                    ),
                   );
 
                   if (_pickerResult != null) {
@@ -98,56 +96,24 @@ class _SettingsViewState extends State<SettingsView> {
                   }
                 },
               ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.access_alarms),
-                  tooltip: 'Show Notifications List',
-                  onPressed: () async {
-                    print(await _localNotifications.pendingNotifications());
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.alarm_off),
-                  tooltip: 'Cancel Notifications',
-                  onPressed: () async {
-                    print(await _localNotifications.cancelNotifications());
-                  },
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.looks_one),
-                  tooltip: 'Single Notification',
-                  onPressed: () {
-                    _localNotifications.simpleNotification();
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.lock_clock),
-                  tooltip: 'Schedule Notification',
-                  onPressed: () {
-                    _localNotifications.scheduleNotification(
-                        id: 99, sound: true);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.repeat),
-                  tooltip: 'Recurrent Notification',
-                  onPressed: () {
-                    _localNotifications.periodicNotification(sound: true);
-                  },
-                ),
-              ],
-            ),
           ],
         )),
       ),
     );
+  }
+
+  String _prettyTime() {
+    String time = '';
+    if (_settings.isOpen) {
+      List<int> _settingsTime = _settings.get('custom_time');
+      time += '${_settingsTime.first}:';
+      if (_settingsTime.last < 10) {
+        time += '0${_settingsTime.last}';
+      } else {
+        time += _settingsTime.last.toString();
+      }
+    }
+    return time;
   }
 
   void _toggleNotifications(bool value) {
