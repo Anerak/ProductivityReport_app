@@ -36,7 +36,7 @@ class MainDrawer extends StatelessWidget {
             Divider(),
             ListTile(
               leading: Icon(Icons.timelapse),
-              title: Text('Home'),
+              title: Text('Reports'),
               onTap: () => Navigator.of(context)
                   .pushReplacementNamed(MainView.routeName),
             ),

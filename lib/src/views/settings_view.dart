@@ -50,54 +50,54 @@ class _SettingsViewState extends State<SettingsView> {
           centerTitle: true,
         ),
         body: Container(
-            child: Column(
-          //mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            SwitchListTile(
-              title: Text('Notifications'),
-              subtitle: Text('Reminder to report your day'),
-              value: _settings?.get('notif_on') ?? false,
-              onChanged: _toggleNotifications,
-            ),
-            if (_settings != null && _settings.get('notif_on'))
-              ListTile(
-                leading: Icon(Icons.access_alarm),
-                title: Text('Set an hour for the reminder'),
-                trailing: Text(
-                  _prettyTime(),
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    color: (_settings != null && _settings.get('notif_on'))
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-                onTap: () async {
-                  TimeOfDay _pickerResult = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay(
-                      hour: TimeOfDay.now().hour,
-                      minute: TimeOfDay.now().minute + 3,
-                    ),
-                  );
-
-                  if (_pickerResult != null) {
-                    List<int> _pickedTime = [
-                      _pickerResult.hour,
-                      _pickerResult.minute
-                    ];
-
-                    if (_settings?.get('custom_time') != _pickedTime) {
-                      await _settings?.put('custom_time', _pickedTime);
-                      _localNotifications.cancelNotifications();
-                      _toggleNotifications(true);
-                    }
-                    setState(() {});
-                  }
-                },
+          child: Column(
+            children: [
+              SwitchListTile(
+                title: Text('Notifications'),
+                subtitle: Text('Reminder to report your day'),
+                value: _settings?.get('notif_on') ?? false,
+                onChanged: _toggleNotifications,
               ),
-          ],
-        )),
+              if (_settings != null && _settings.get('notif_on'))
+                ListTile(
+                  leading: Icon(Icons.access_alarm),
+                  title: Text('Set an hour for the reminder'),
+                  trailing: Text(
+                    _prettyTime(),
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: (_settings != null && _settings.get('notif_on'))
+                          ? Colors.black
+                          : Colors.grey,
+                    ),
+                  ),
+                  onTap: () async {
+                    TimeOfDay _pickerResult = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay(
+                        hour: TimeOfDay.now().hour,
+                        minute: TimeOfDay.now().minute + 3,
+                      ),
+                    );
+
+                    if (_pickerResult != null) {
+                      List<int> _pickedTime = [
+                        _pickerResult.hour,
+                        _pickerResult.minute
+                      ];
+
+                      if (_settings?.get('custom_time') != _pickedTime) {
+                        await _settings?.put('custom_time', _pickedTime);
+                        _localNotifications.cancelNotifications();
+                        _toggleNotifications(true);
+                      }
+                      setState(() {});
+                    }
+                  },
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

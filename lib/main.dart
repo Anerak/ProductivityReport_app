@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: SettingsView.routeName,
+      initialRoute: MainView.routeName,
       routes: {
         MainView.routeName: (_) => MainView(),
         SettingsView.routeName: (_) => SettingsView(),
