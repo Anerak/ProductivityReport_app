@@ -229,14 +229,16 @@ class _MainViewState extends State<MainView> {
     Report _newrep;
     int _currKey;
     int _currMood;
-
+    DateTime _backupDate;
     if (tmprep == null) {
       _currKey = null;
       _newrep = Report(mood: 2, description: '');
+      _backupDate = _newrep.date;
       _currMood = 2;
     } else {
       _currKey = tmprep.keys.first;
       _newrep = tmprep.values.first;
+      _backupDate = _newrep.date;
       _currMood = _newrep.mood;
       _txtController.text = _newrep.description;
     }
@@ -249,10 +251,30 @@ class _MainViewState extends State<MainView> {
           builder: (BuildContext context, setState) {
             return SimpleDialog(
               children: [
-                Text(
-                  _newrep.toString(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left),
+                      onPressed:
+                          _newrep.date.difference(_backupDate).inDays.abs() < 7
+                              ? () => setState(() => _newrep.decreaseDay())
+                              : null,
+                    ),
+                    Text(
+                      _newrep.toString(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 25.0),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.chevron_right),
+                      onPressed: _newrep.date
+                              .add(Duration(days: 1))
+                              .isBefore(DateTime.now())
+                          ? () => setState(() => _newrep.increaseDay())
+                          : null,
+                    ),
+                  ],
                 ),
                 SizedBox(height: 15.0),
                 Row(
@@ -338,7 +360,10 @@ class _MainViewState extends State<MainView> {
                     ),
                     IconButton(
                       icon: Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).maybePop(),
+                      onPressed: () {
+                        _newrep.date = _backupDate;
+                        Navigator.of(context).maybePop();
+                      },
                     ),
                   ],
                 )

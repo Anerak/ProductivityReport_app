@@ -20,4 +20,7 @@ class Report extends HiveObject {
 
   @override
   String toString() => '${date.day}/${date.month}/${date.year}';
+  void increaseDay() => this.date = this.date.add(Duration(days: 1));
+
+  void decreaseDay() => this.date = this.date.subtract(Duration(days: 1));
 }
