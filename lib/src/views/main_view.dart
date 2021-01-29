@@ -220,6 +220,7 @@ class _MainViewState extends State<MainView> {
                     tooltip: 'Delete',
                     onPressed: () => setState(() {
                       _repbox.delete(repKey);
+                      _updateReportsList();
                       Navigator.of(context).pop();
                     }),
                   )
