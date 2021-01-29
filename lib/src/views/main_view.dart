@@ -24,14 +24,9 @@ class _MainViewState extends State<MainView> {
   Future<void> loadReports() async {
     _repbox = await Hive.openBox('reports');
     _updateReportsList();
-    //_replist.sort((MapEntry a, MapEntry b) => a.value.date.compareTo(b.value.date));
     setState(() {});
   }
 
-  // TODO
-  // SORTING
-  // How will it work?
-  // We can do map[1] to access the second position of a map. keep that in mind.
   void _updateReportsList() {
     _replist = _repbox.toMap().entries.toList();
     _sortReports();
@@ -82,7 +77,6 @@ class _MainViewState extends State<MainView> {
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int i) {
-                        //if (_repbox.length == 0) {
                         if (_replist.length == 0) {
                           return Center(
                             child: Text(
@@ -91,13 +85,11 @@ class _MainViewState extends State<MainView> {
                         }
                         return _reportSquare(
                           context: context,
-                          report:
-                              _replist[i].value, //_repbox.getAt(i) as Report,
-                          repKey: _replist[i].key, //_repbox.keyAt(i),
+                          report: _replist[i].value,
+                          repKey: _replist[i].key,
                         );
                       },
                       childCount: _replist.length,
-                      //childCount: _repbox.length,
                     ),
                   )
                 ],
@@ -127,6 +119,7 @@ class _MainViewState extends State<MainView> {
                 ),
                 onPressed: () async {
                   await _repbox?.clear();
+                  _updateReportsList();
                   setState(() {
                     Navigator.of(context).pop();
                   });
