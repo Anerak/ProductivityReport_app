@@ -12,7 +12,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   Box _repbox;
-
+  List<MapEntry<dynamic, dynamic>> _replist;
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -23,9 +23,22 @@ class _MainViewState extends State<MainView> {
 
   Future<void> loadReports() async {
     _repbox = await Hive.openBox('reports');
+    _updateReportsList();
+    //_replist.sort((MapEntry a, MapEntry b) => a.value.date.compareTo(b.value.date));
     setState(() {});
   }
 
+  // TODO
+  // SORTING
+  // How will it work?
+  // We can do map[1] to access the second position of a map. keep that in mind.
+  void _updateReportsList() {
+    _replist = _repbox.toMap().entries.toList();
+    _sortReports();
+  }
+
+  void _sortReports() => _replist
+      .sort((MapEntry a, MapEntry b) => a.value.date.compareTo(b.value.date));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +82,8 @@ class _MainViewState extends State<MainView> {
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int i) {
-                        if (_repbox.length == 0) {
+                        //if (_repbox.length == 0) {
+                        if (_replist.length == 0) {
                           return Center(
                             child: Text(
                                 'Report your day so we have something to show here!'),
@@ -77,11 +91,13 @@ class _MainViewState extends State<MainView> {
                         }
                         return _reportSquare(
                           context: context,
-                          report: _repbox.getAt(i) as Report,
-                          repKey: _repbox.keyAt(i),
+                          report:
+                              _replist[i].value, //_repbox.getAt(i) as Report,
+                          repKey: _replist[i].key, //_repbox.keyAt(i),
                         );
                       },
-                      childCount: _repbox.length,
+                      childCount: _replist.length,
+                      //childCount: _repbox.length,
                     ),
                   )
                 ],
@@ -355,6 +371,7 @@ class _MainViewState extends State<MainView> {
                         }
                         Navigator.of(context)
                             .popUntil(ModalRoute.withName('home'));
+                        _updateReportsList();
                         setState(() {});
                       },
                     ),
